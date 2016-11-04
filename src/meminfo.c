@@ -99,6 +99,8 @@ void print_io_info(int childpid)
             printf("Bytes written: %llu\n", value);
         }
     }
+
+    free(line);
 }
 
 int main(int argc, char* argv[])
