@@ -37,27 +37,42 @@ void print_meminfo(int childpid)
         if (strncmp(line, "VmHWM", 5) == 0)
         {
             sscanf(line, "%5s: %llu %2s", key, &value, unit);
-            printf("Physical Memory: %llu %2s\n", value, unit);
+            printf("VmHWM Peak Physical Memory: %llu %2s\n", value, unit);
+        }
+        if (strncmp(line, "VmRSS", 5) == 0) 
+        {
+            sscanf(line, "%5s: %llu %2s", key, &value, unit);
+            printf("VmRSS Physical Memory     : %llu %2s\n", value, unit);
         }
         if (strncmp(line, "VmPeak", 6) == 0)
         {
             sscanf(line, "%6s: %llu %2s", key, &value, unit);
-            printf("Virtual Memory : %llu %2s\n", value, unit);
+            printf("VmPeak Virtual Memory     : %llu %2s\n", value, unit);
+        }
+        if (strncmp(line, "VmSize", 6) == 0)
+        {
+            sscanf(line, "%6s: %llu %2s", key, &value, unit);
+            printf("VmSize Virtual Memory     : %llu %2s\n", value, unit);
         }
         if (strncmp(line, "VmStk", 5) == 0)
         {
             sscanf(line, "%5s: %llu %2s", key, &value, unit);
-            printf("Stack Segment  : %llu %2s\n", value, unit);
+            printf("VmStk Stack Segment       : %llu %2s\n", value, unit);
         }
         if (strncmp(line, "VmData", 6) == 0)
         {
             sscanf(line, "%6s: %llu %2s", key, &value, unit);
-            printf("Data Segment   : %llu %2s\n", value, unit);
+            printf("VmData Data Segment       : %llu %2s\n", value, unit);
         }
         if (strncmp(line, "VmExe", 5) == 0)
         {
             sscanf(line, "%5s: %llu %2s", key, &value, unit);
-            printf("Text Segment   : %llu %2s\n", value, unit);
+            printf("VmExe Text Segment        : %llu %2s\n", value, unit);
+        }
+        if (strncmp(line, "VmSwap", 6) == 0) 
+        {
+            sscanf(line, "%6s: %llu %2s", key, &value, unit);
+            printf("VmSwap Swapped Memory     : %llu %2s\n", value, unit);
         }
     }
 
