@@ -117,48 +117,77 @@ void print_io_info(int childpid)
 
     free(line);
 }
+void printInfo()
+{
+    printf("useage: ./meminfo --pid 12345\n        ./meminfo --spawn process\n");
+}
 
 int main(int argc, char* argv[])
 {
-    long data = PTRACE_O_TRACEEXIT;
-    pid_t child;
-    child = fork();
-    if (child == 0)
+    if(argv[1] == NULL) 
     {
-        ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execvp(argv[1], &argv[1]);
+        printInfo();
+        return EXIT_FAILURE;
     }
-    else
+
+    if (strncmp(argv[1], "--pid", 5) == 0) 
     {
-        int status;
-        waitpid(child, &status, 0);
-
-        if (waitpid(child, &status, WNOHANG))
+        pid_t child = atol(argv[2]);
+        if (child == 0) 
         {
-            fprintf(stderr, "Error: unable to run %s\n", argv[1]);
-            exit(EXIT_FAILURE);
+          perror("Invalid Pid");
+          return EXIT_FAILURE;
         }
-
-        int ret = ptrace(PTRACE_SETOPTIONS,
-                         child, NULL,
-                         (void*)data);
-        if (ret == -1)
+        print_meminfo(child);
+        print_io_info(child);
+        return EXIT_SUCCESS;
+    }
+    else if (strncmp(argv[1], "--spawn", 7) == 0) 
+    {
+        long data = PTRACE_O_TRACEEXIT;
+        pid_t child;
+        child = fork();
+        if (child == 0)
         {
-            perror("Can not trace process");
-            return EXIT_FAILURE;
+            ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+            execvp(argv[2], &argv[2]);
         }
-
-        while (1)
+        else
         {
-            ptrace(PTRACE_CONT, child, NULL, NULL);
+            int status;
             waitpid(child, &status, 0);
-            if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))
+
+            if (waitpid(child, &status, WNOHANG))
             {
-                print_meminfo(child);
-                print_io_info(child);
-                break;
+                fprintf(stderr, "Error: unable to run %s\n", argv[1]);
+                exit(EXIT_FAILURE);
             }
+
+            int ret = ptrace(PTRACE_SETOPTIONS,
+                             child, NULL,
+                             (void*)data);
+            if (ret == -1)
+            {
+                perror("Can not trace process");
+                return EXIT_FAILURE;
+            }
+
+            while (1)
+            {
+                ptrace(PTRACE_CONT, child, NULL, NULL);
+                waitpid(child, &status, 0);
+                if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))
+                {
+                    print_meminfo(child);
+                    print_io_info(child);
+                    break;
+                }
+            }
+            return EXIT_SUCCESS;
         }
     }
-    return EXIT_SUCCESS;
+
+    printInfo();
+    return EXIT_FAILURE;
 }
+
