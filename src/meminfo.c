@@ -28,8 +28,8 @@ void print_meminfo(int childpid)
     line = calloc(MAX_LINE, sizeof(char));
     assert(line);
 
-    char key[6];
-    char unit[2];
+    char key[7];
+    char unit[3];
     unsigned long long value;
     printf("\nMemory Statistics:\n");
     while (getline(&line, &len, fin) != -1)
@@ -98,7 +98,7 @@ void print_io_info(int childpid)
     line = calloc(MAX_LINE, sizeof(char));
     assert(line);
 
-    char key[6];
+    char key[12];
     unsigned long long value;
     printf("\nFile I/O Statistics:\n");
     while (getline(&line, &len, fin) != -1)
